@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yizhi.student.dao.StudentInfoDao">
+
+    <resultMap id="BaseMap" type="com.yizhi.student.domain.StudentInfoDO">
+        <id column="id" property="id"></id>
+        <result column="student_id" property="studentId"></result>
+        <result column="exam_id" property="examId"></result>
+        <result column="class_id" property="classId"></result>
+        <result column="student_name" property="studentName"></result>
+        <result column="certify" property="certify"></result>
+        <result column="mail_address" property="mailAddress"></result>
+        <result column="foreign_lanaguage" property="foreignLanaguage"></result>
+        <result column="student_sex" property="studentSex"></result>
+        <result column="nation" property="nation"></result>
+        <result column="political" property="political"></result>
+        <result column="card_id" property="cardId"></result>
+        <result column="telephone" property="telephone"></result>
+        <result column="subject_type" property="subjectType"></result>
+        <result column="tocollege" property="tocollege"></result>
+        <result column="tomajor" property="tomajor"></result>
+        <result column="birthplace" property="birthplace"></result>
+        <result column="grade" property="grade"></result>
+        <result column="isstate" property="isstate"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="note" property="note"></result>
+        <result column="add_time" property="addTime"></result>
+        <result column="add_userid" property="addUserid"></result>
+        <result column="edit_time" property="editTime"></result>
+        <result column="edit_userid" property="editUserid"></result>
+    </resultMap>
+
+    <sql id="StudentJoins">
+        left join sys_college coll on s.tocollege = coll.id
+        left join sys_class c on s.class_id = c.id
+        left join sys_major m on s.tomajor = m.id
+    </sql>
+
+    <sql id="StudentColumns">
+        s.`id`, s.`student_id`, s.`exam_id`, s.`class_id`, s.`student_name`, s.`certify`,
+        s.`mail_address`, s.`foreign_lanaguage`, s.`student_sex`, s.`nation`, s.`political`, s.`card_id`,
+        s.`telephone`, s.`subject_type`, s.`tocollege`, s.`tocampus`, s.`tomajor`, s.`birthplace`, s.`grade`, s.`isstate`,
+        s.`birthday`, s.`note`, s.`add_time`, s.`add_userid`, s.`edit_time`, s.`edit_userid`
+    </sql>
+
+    <select id="get" resultMap="BaseMap">
+        select
+            `id`, `student_id`, `exam_id`, `class_id`, `student_name`, `certify`,
+            `mail_address`, `foreign_lanaguage`, `student_sex`, `nation`, `political`, `card_id`,
+            `telephone`, `subject_type`, `tocollege`, `tocampus, `tomajor`, `birthplace`, `grade`, `isstate`,
+            `birthday`, `note`, add_time`, `add_userid`, `edit_time`, `edit_userid`
+        where id = #{id}
+    </select>
+
+    <select id="list" resultMap="BaseMap">
+        select
+            <include refid="StudentColumns"></include>
+        from s_student_info s
+            <include refid="StudentJoins"></include>
+        <where>
+            <if test="tocollege != null and tocollege != ''">and coll.college_name = #{collegeName}</if>
+            <if test="class_id != null and class_id != ''">and c.class_name = #{className}</if>
+            <if test="tomajor != null and tomajor != ''">and m.major_name = #{majorName}</if>
+            <if test="student_name != null and student_name != ''">and s.student_name LIKE
+                CONCAT('%',#{studentName},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+            <otherwise>
+                order by s.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from s_student_info
+            <include refid="StudentJoins"></include>
+        <where>
+            <if test="tocollege != null and tocollege != ''">and coll.college_name = #{collegeName}</if>
+            <if test="class_id != null and class_id != ''">and c.class_name = #{className}</if>
+            <if test="tomajor != null and tomajor != ''">and m.major_name = #{majorName}</if>
+            <if test="student_name != null and student_name != ''">and s.student_name LIKE
+                CONCAT('%',#{studentName},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="save">
+        insert into s_student_info
+        (
+            `id`, `student_id`, `exam_id`, `class_id`, `student_name`, `certify`,
+            `mail_address`, `foreign_lanaguage`, `student_sex`, `nation`, `political`, `card_id`,
+            `telephone`, `subject_type`, `tocollege`, `tocampus, `tomajor`, `birthplace`, `grade`, `isstate`,
+            `birthday`, `note`, add_time`, `add_userid`, `edit_time`, `edit_userid`
+        )
+        values
+        (
+            #{id}, #{studentId}, #{examId}, #{classId}, #{studentName}, #{certify},
+            #{mailAddress}, #{foreignLanaguage}, #{studentSex}, #{nation}, #{political}, #{cardId},
+            #{telephone}, #{subjectType}, #{tocollege}, #{tocampus}, #{tomajor}, #{birthplace}, #{grade}, #{isstate},
+            #{birthday}, #{note}, #{addTime}, #{addUserid}, #{editTime}, #{editUserid}
+        )
+    </insert>
+
+    <update id="update">
+        update s_student_info
+        <set>
+            <if test="student_id != null">`student_id` = #{studentId},</if>
+            <if test="exam_id != null">`exam_id` = #{examId},</if>
+            <if test="class_id != null">`class_id` = #{classId},</if>
+            <if test="student_name != null">`student_name` = #{studentName}</if>
+            <if test="certify != null">`certify` = #{certify}</if>
+            <if test="mail_address != null">`mail_address` = #{mailAddress}</if>
+            <if test="foreign_lanaguage != null">`foreign_lanaguage` = #{foreignLanaguage}</if>
+            <if test="student_sex != null">`student_sex` = #{studentSex}</if>
+            <if test="nation != null">`nation` = #{nation}</if>
+            <if test="political != null">`political` = #{political}</if>
+            <if test="card_id != null">`card_id` = #{cardId}</if>
+            <if test="telephone != null">`telephone` = #{telephone}</if>
+            <if test="subject_type != null">`subject_type` = #{subjectType}</if>
+            <if test="tocollege != null">`tocollege` = #{tocollege}</if>
+            <if test="tocampus != null">`tocampus` = #{tocampus}</if>
+            <if test="tomajor != null">`tomajor` = #{tomajor}</if>
+            <if test="birthplace != null">`birthplace` = #{birthplace}</if>
+            <if test="grade != null">`grade` = #{grade}</if>
+            <if test="isstate != null">`isstate` = #{isstate}</if>
+            <if test="birthday != null">`birthday` = #{birthday}</if>
+            <if test="note != null">`note` = #{note}</if>
+            <if test="add_time != null">`add_time` = #{addTime}</if>
+            <if test="add_userid != null">`add_userid` = #{addUserid}</if>
+            <if test="edit_time != null">`edit_time` = #{editTime}</if>
+            <if test="edit_userid != null">`edit_userid` = #{editUserid}</if>
+        </set>
+        where id = #{id};
+    </update>
+
+    <delete id="remove">
+        delete from s_student_info where id = #{id};
+    </delete>
+
+    <delete id="batchRemove">
+        delete from s_student_info where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
