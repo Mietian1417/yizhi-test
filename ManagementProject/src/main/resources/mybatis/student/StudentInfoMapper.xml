@@ -46,10 +46,9 @@
 
     <select id="get" resultMap="BaseMap">
         select
-            `id`, `student_id`, `exam_id`, `class_id`, `student_name`, `certify`,
-            `mail_address`, `foreign_lanaguage`, `student_sex`, `nation`, `political`, `card_id`,
-            `telephone`, `subject_type`, `tocollege`, `tocampus, `tomajor`, `birthplace`, `grade`, `isstate`,
-            `birthday`, `note`, add_time`, `add_userid`, `edit_time`, `edit_userid`
+            <include refid="StudentColumns"></include>
+        from s_student_info s
+            <include refid="StudentJoins"></include>
         where id = #{id}
     </select>
 
@@ -96,8 +95,8 @@
         (
             `id`, `student_id`, `exam_id`, `class_id`, `student_name`, `certify`,
             `mail_address`, `foreign_lanaguage`, `student_sex`, `nation`, `political`, `card_id`,
-            `telephone`, `subject_type`, `tocollege`, `tocampus, `tomajor`, `birthplace`, `grade`, `isstate`,
-            `birthday`, `note`, add_time`, `add_userid`, `edit_time`, `edit_userid`
+            `telephone`, `subject_type`, `tocollege`, `tocampus`, `tomajor`, `birthplace`, `grade`, `isstate`,
+            `birthday`, `note`, `add_time`, `add_userid`, `edit_time`, `edit_userid`
         )
         values
         (
@@ -141,7 +140,7 @@
     </update>
 
     <delete id="remove">
-        delete from s_student_info where id = #{id};
+        delete from s_student_info where id = #{id}
     </delete>
 
     <delete id="batchRemove">
